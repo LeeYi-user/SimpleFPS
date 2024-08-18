@@ -77,10 +77,11 @@ void UCPP_GameInstance::CreateServer()
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bAllowJoinInProgress = true;
 	SessionSettings.bIsDedicated = false;
-	SessionSettings.bIsLANMatch = true;
+	SessionSettings.bIsLANMatch = IOnlineSubsystem::Get()->GetSubsystemName() == "NULL";
 	SessionSettings.bShouldAdvertise = true;
 	SessionSettings.bUsesPresence = true;
 	SessionSettings.NumPublicConnections = 5;
+	SessionSettings.bUseLobbiesIfAvailable = true;
 
 	SessionInterface->CreateSession(0, FName("My Session"), SessionSettings);
 }
@@ -90,8 +91,8 @@ void UCPP_GameInstance::JoinServer()
 	UE_LOG(LogTemp, Warning, TEXT("JoinServer"));
 
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
-	SessionSearch->bIsLanQuery = true; // IS LAN
-	SessionSearch->MaxSearchResults = 10000;
+	SessionSearch->bIsLanQuery = IOnlineSubsystem::Get()->GetSubsystemName() == "NULL";
+	SessionSearch->MaxSearchResults = 150000;
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
