@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "CPP_GameInstance.generated.h"
 
 /**
@@ -18,5 +19,15 @@ public:
 	UCPP_GameInstance();
 
 protected:
+	IOnlineSessionPtr SessionInterface;
+
 	virtual void Init() override;
+
+	virtual void OnCreateSessionComplete(FName ServerName, bool Succeeded);
+
+	UFUNCTION(BlueprintCallable)
+	void CreateServer();
+
+	UFUNCTION(BlueprintCallable)
+	void JoinServer();
 };
