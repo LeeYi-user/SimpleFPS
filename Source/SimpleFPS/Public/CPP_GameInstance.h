@@ -30,8 +30,16 @@ protected:
 	virtual void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 
 	UFUNCTION(BlueprintCallable)
-	void CreateServer();
+	FString CreateServer();
 
 	UFUNCTION(BlueprintCallable)
-	void JoinServer();
+	void JoinServer(FString code);
+
+public:
+	// Function to generate a random 6-character string
+	FString GenerateRandomString();
+
+private:
+	// Helper function to generate a random character
+	TCHAR GetRandomCharacter();
 };

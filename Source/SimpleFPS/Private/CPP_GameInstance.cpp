@@ -70,7 +70,7 @@ void UCPP_GameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionC
 	}
 }
 
-void UCPP_GameInstance::CreateServer()
+FString UCPP_GameInstance::CreateServer()
 {
 	UE_LOG(LogTemp, Warning, TEXT("CreateServer"));
 
@@ -83,17 +83,52 @@ void UCPP_GameInstance::CreateServer()
 	SessionSettings.NumPublicConnections = 5;
 	SessionSettings.bUseLobbiesIfAvailable = true;
 
+	FString code = GenerateRandomString();
+	SessionSettings.Set(FName("Code"), code, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+
 	SessionInterface->CreateSession(0, FName("My Session"), SessionSettings);
+
+	return code;
 }
 
-void UCPP_GameInstance::JoinServer()
+void UCPP_GameInstance::JoinServer(FString code)
 {
+	if (code == "")
+	{
+		return;
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("JoinServer"));
 
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	SessionSearch->bIsLanQuery = IOnlineSubsystem::Get()->GetSubsystemName() == "NULL";
 	SessionSearch->MaxSearchResults = 150000;
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+	SessionSearch->QuerySettings.Set(FName("Code"), code.ToUpper(), EOnlineComparisonOp::Equals);
 
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+}
+
+FString UCPP_GameInstance::GenerateRandomString()
+{
+	FString RandomString;
+	const int32 StringLength = 6;
+
+	for (int32 i = 0; i < StringLength; i++)
+	{
+		RandomString.AppendChar(GetRandomCharacter());
+	}
+
+	return RandomString;
+}
+
+TCHAR UCPP_GameInstance::GetRandomCharacter()
+{
+	// Define character pool (A-Z, 0-9)
+	const FString CharPool = TEXT("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+
+	// Generate a random index to select a character from the pool
+	int32 Index = FMath::RandRange(0, CharPool.Len() - 1);
+
+	return CharPool[Index];
 }
