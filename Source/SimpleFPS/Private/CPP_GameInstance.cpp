@@ -93,18 +93,13 @@ FString UCPP_GameInstance::CreateServer()
 
 void UCPP_GameInstance::JoinServer(FString code)
 {
-	if (code == "")
-	{
-		return;
-	}
-
 	UE_LOG(LogTemp, Warning, TEXT("JoinServer"));
 
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	SessionSearch->bIsLanQuery = IOnlineSubsystem::Get()->GetSubsystemName() == "NULL";
 	SessionSearch->MaxSearchResults = 150000;
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
-	SessionSearch->QuerySettings.Set(FName("Code"), code.ToUpper(), EOnlineComparisonOp::Equals);
+	SessionSearch->QuerySettings.Set(FName("Code"), code, EOnlineComparisonOp::Equals);
 
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 }
